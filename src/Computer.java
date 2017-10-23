@@ -8,7 +8,7 @@ public class Computer extends Player {
     make a new move
      */
     @Override
-    void newMove(){
+    public void newMove(){
 
     }
 
