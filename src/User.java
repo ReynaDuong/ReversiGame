@@ -6,25 +6,8 @@ public class User extends Player {
         super(size);
     }
 
-
-    private Integer validateInput(String arg){
-
-        Integer x = 0;
-        try{
-            x = Integer.parseInt(arg);
-            if (x < 0 || x >= board.getSize()){
-                x = null;
-            }
-        }
-        catch(NumberFormatException e){
-            x = null;
-        }
-        return x;
-    }
-
-
     @Override
-    void newMove() {
+    public void newMove() {
         Scanner scanner = new Scanner(System.in);
         Integer row = 0;
         Integer col = 0;
@@ -36,14 +19,18 @@ public class User extends Player {
             System.out.println("Please enter row and column number separated by space: ");
             rowInput = scanner.next();
             colInput = scanner.next();
-            row = validateInput(rowInput);
-            col = validateInput(colInput);
+            row = DriverMain.checkRange(DriverMain.getInt(), 0, board.getSize() - 1);
+            col = DriverMain.checkRange(DriverMain.getInt(), 0, board.getSize() - 1);
 
             // check for valid move on board
         }
         while (row == null || col == null || board.isValidMove(row, col));
 
+        // make new move
+        board.addMove(row, col);
 
+        // check if the move turns any other move in the board and turn them
+        board.flipColor();
 
     }
 }
