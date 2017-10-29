@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 abstract public class Player {
 
     protected class Board {
@@ -8,8 +10,8 @@ abstract public class Player {
          * create a new board and initialize with _
          * @param size the size of the grid
          */
-        Board(int size){
-            if (size < 2 || size%2 != 0){
+        Board(Integer size){
+            if (size == null || size < 2 || size%2 != 0){
                 size = 4;
             }
             grid = new char [size][size];
@@ -24,6 +26,10 @@ abstract public class Player {
             grid[(size/2 - 1)][size/2] = grid[size/2][(size/2 - 1)] = 'B';
         }
 
+        /**
+         * return the grid size
+         * @return the length of the grid array
+         */
         public int getSize(){
             return grid.length;
         }
@@ -56,31 +62,17 @@ abstract public class Player {
 
         // check if the last move can turn any other move on the grid
         private int[] getFlippingPoints(int direction, int currentRow, int currentColumn){
-            int [] startPoint = new int[2];
-            int row = 0;
-            int column = 0;
-
-            for (int ix = row; ix >= 0; ix--){
-                if (grid[row][column] == color){
-                    startPoint[0] = row;
-                    startPoint[1] = column;
-                    break;
-                }
-            }
+            int[] endPoint = new int[2];
 
 
-            return startPoint;
+            return endPoint;
         }
 
 
 
-        // turn the color
-        protected void flipColor(){
-            // for 4 directions, turns the possible one
-            final int DIRECTIONS = 4;
-            for (int ix = 0; ix < DIRECTIONS; ix++){
+        // flip the possible discs
+        protected void flipColor(int currentRow, int currentCol){
 
-            }
 
         }
 
@@ -98,10 +90,21 @@ abstract public class Player {
 
     }
 
+//    protected class Point implements Comparable<Point>{
+//        int row;
+//        int column;
+//
+//        @Override
+//        public int compareTo(Point point){
+//            return 0;
+//        }
+//
+//    }
 
     protected char color;
     protected static Board board;
     private static int ID = 0;
+
 
     /**
      * initialize the player, the first one is B and the second one is W
@@ -109,13 +112,7 @@ abstract public class Player {
      */
     Player(int size){
         ID++;
-//        color = (ID == 1) ? 'B' : 'W';
-        if (ID == 1){
-            color = 'B';
-        }
-        else{
-            color = 'W';
-        }
+        color = (ID == 1) ? 'B' : 'W';
         board = new Board(size);
     }
 

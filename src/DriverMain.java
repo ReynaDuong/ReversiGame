@@ -8,9 +8,10 @@ public class DriverMain {
 
         // choose board size
         int boardSize = 0;
-        System.out.println("Please enter the board size (must be an even number greater than or equal to 2)" +
+        System.out.println("Please enter the board size (must be an even number greater than or equal to 2 " +
                 "or the board will have size 4 in default):  ");
         boardSize = getInt();
+
 
         // create 2 players
         Player[] players = new Player[NUMBER_OF_PLAYER];
@@ -62,7 +63,7 @@ public class DriverMain {
         do {
             System.out.println("1. Player versus Computer");
             System.out.println("2. Computer versus Computer");
-            System.out.println("3. Player versus Player\n" + "Your choice:  ");
+            System.out.print("3. Player versus Player\n" + "Your choice:  ");
 
             // get user's option
             choice = checkRange(getInt(), 1, 3);
@@ -86,7 +87,7 @@ public class DriverMain {
     }
 
     public static Integer checkRange(Integer x, int lowerBound, int upperBound){
-        if (x < lowerBound || x > upperBound) {
+        if (x == null || x < lowerBound || x > upperBound) {
             x = null;
         }
         return x;
