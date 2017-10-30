@@ -1,7 +1,11 @@
 import java.util.LinkedList;
+import java.util.TreeSet;
 
 abstract public class Player {
 
+    public enum Direction{
+        RIGHT, LEFT, UP, DOWN
+    }
     protected class Board {
         private char[][] grid;
 
@@ -58,11 +62,35 @@ abstract public class Player {
          */
         public void addMove(int row, int col){
             grid[row][col] = color;
+            // add the move to the list
         }
 
         // check if the last move can turn any other move on the grid
-        private int[] getFlippingPoints(int direction, int currentRow, int currentColumn){
+        private int[] getFlippingPoints(Direction direction, int currentRow, int currentColumn){
             int[] endPoint = new int[2];
+            int iRow = 0;
+            int iCol = 0;
+            // start from the outermost point of the grid and move to next moves
+            // if encounter opponent's color, then move forward
+            // if encounter blank, then move, change the endpoint to the
+            // next one with the same color
+            // reach the current point, then return the endpoint
+            if (direction == Direction.LEFT){
+                iCol = 0;
+                iRow = currentRow;
+                for (int i = iCol; i <= currentColumn; i++){
+
+                }
+            }
+            else if (direction == Direction.RIGHT){
+
+            }
+            else if (direction == Direction.UP){
+
+            }
+            else{
+
+            }
 
 
             return endPoint;
@@ -104,6 +132,8 @@ abstract public class Player {
     protected char color;
     protected static Board board;
     private static int ID = 0;
+    private static TreeSet<Point> blackMoves;
+    private static TreeSet<Point> whiteMoves;
 
 
     /**
