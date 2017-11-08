@@ -3,18 +3,19 @@ import java.util.Scanner;
 public class DriverMain {
     public static void main(String [] args){
         final int NUMBER_OF_PLAYER = 2;
+
+        // create 2 players
+        Player[] players = new Player[NUMBER_OF_PLAYER];
+
         // get game types
         int gameType = chooseGameType();
 
         // choose board size
         int boardSize = 0;
-        System.out.println("Please enter the board size (must be an even number greater than or equal to 2 " +
-                "or the board will have size 4 in default):  ");
+        System.out.print("Please enter the board size (must be an even number greater than or equal to 2 " + "or the board will have size 4 in default):  ");
         boardSize = getInt();
 
 
-        // create 2 players
-        Player[] players = new Player[NUMBER_OF_PLAYER];
 
         if (gameType == 1){
             players[0] = new User(boardSize);
@@ -40,17 +41,22 @@ public class DriverMain {
         // loop until there is no valid move means game end
         do{
             // display board
-            players[0].board.displayBoard();
-
-            // make new move. turn other moves
-            players[counter%2].newMove();
+            players[counter%2].board.displayBoard();
 
             // check for score
+            displayScore(players[0], players[1]);
 
+            // make new move. turn other moves
+            players[(counter%2)].newMove();
 
             counter++;
+
         }
-        while(!players[0].board.isEndGame() && !players[1].board.isEndGame());
+        while(!players[counter%2].board.isEndGame());
+
+        // display who win + score
+        displayWinner(players[0], players[1]);
+
 
 
     }
@@ -92,5 +98,25 @@ public class DriverMain {
         }
         return x;
     }
+
+    public static void displayScore(Player player1, Player player2){
+        System.out.println("Black: " + player1.board.getNumberOfDisc());
+        System.out.println("White: " + player2.board.getNumberOfDisc());
+    }
+
+    public static void displayWinner(Player player1, Player player2){
+        displayScore(player1, player2);
+
+        if (player1.board.getNumberOfDisc() == player2.board.getNumberOfDisc()){
+            System.out.println("This is a tie.");
+        }
+        else{
+            System.out.println("Congratulation, " + (player1.board.getNumberOfDisc() > player2.board.getNumberOfDisc() ? "Black" : "White"));
+        }
+
+
+
+    }
+
 
 }

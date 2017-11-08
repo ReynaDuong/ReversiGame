@@ -1,20 +1,17 @@
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.TreeSet;
 
 abstract public class Player {
 
-    public enum Direction{
-        RIGHT, LEFT, UP, DOWN
-    }
     protected class Board {
         private char[][] grid;
 
-        /**
-         * if the size is less than 2 or not even, then use the default size
-         * create a new board and initialize with _
-         * @param size the size of the grid
-         */
-        Board(Integer size){
+        Board(){
+
+        }
+
+
+        protected void createBoard(Integer size){
             if (size == null || size < 2 || size%2 != 0){
                 size = 4;
             }
@@ -28,6 +25,12 @@ abstract public class Player {
             // make the 4 middle discs initialized
             grid[(size/2 - 1)][(size/2 - 1)] = grid[size/2][size/2] = 'W';
             grid[(size/2 - 1)][size/2] = grid[size/2][(size/2 - 1)] = 'B';
+
+            // add the moves to the tree sets
+            blackMoves.add(new Point(size/2 - 1, size/2 ));
+            blackMoves.add(new Point(size/2, size/2 - 1));
+            whiteMoves.add(new Point(size/2 - 1, size/2 - 1));
+            whiteMoves.add(new Point(size/2, size/2 ));
         }
 
         /**
@@ -50,9 +53,70 @@ abstract public class Player {
             }
         }
 
-        public boolean isValidMove(int row, int col){
-            // check if the adjacent slot is empty or is different color
-            return (grid[row][col - 1] != color & grid[row][col + 1] != color & grid[row - 1][col] != color & grid[row + 1][col] != color);
+        public boolean isValidMove(int row, int col) {
+           /*
+           loop through the list of opponent's list
+           if the move is next to an opponent move
+           not adjacent to any same color
+           valid move
+            */
+
+            char blank = '_';
+            char up = blank;
+            char down = blank;
+            char left = blank;
+            char right = blank;
+
+            // if the spot is not blank, false
+            if (grid[row][col] != blank) {
+                return false;
+            }
+            else {
+                // check if the position of the spot is on edges or in centers
+                if (haveUp(row)) {
+                    up = grid[row - 1][col];
+                }
+
+                if (haveDown(row)) {
+                    down = grid[row + 1][col];
+                }
+
+                if (haveLeft(col)) {
+                    left = grid[row][col - 1];
+                }
+
+                if (haveRight(col)) {
+                    right = grid[row][col + 1];
+                }
+
+                // check if the all the direction blank
+                if (up == blank && down == blank && left == blank && right == blank) {
+                    return false;
+                }
+                // if any is same color
+                else if (up == color || down == color || left == color || right == color){
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+        }
+
+        private boolean haveUp(int curRow){
+            return curRow >= 1;
+        }
+
+        private boolean haveDown(int curRow){
+            return (curRow + 1) < getSize();
+        }
+
+        private boolean haveLeft(int curCol){
+            return (curCol >= 1);
+        }
+
+        private boolean haveRight(int curCol){
+            return (curCol + 1) < getSize();
         }
 
         /**
@@ -66,74 +130,209 @@ abstract public class Player {
         }
 
         // check if the last move can turn any other move on the grid
-        private int[] getFlippingPoints(Direction direction, int currentRow, int currentColumn){
-            int[] endPoint = new int[2];
+        private ArrayList<Point> getFlippedPoints(int curRow, int curCol){
+            ArrayList<Point> flippedPointsList = new ArrayList<Point>();
+            ArrayList<Point> candidatePoints = new ArrayList<Point>();
             int iRow = 0;
             int iCol = 0;
-            // start from the outermost point of the grid and move to next moves
-            // if encounter opponent's color, then move forward
-            // if encounter blank, then move, change the endpoint to the
-            // next one with the same color
-            // reach the current point, then return the endpoint
-            if (direction == Direction.LEFT){
-                iCol = 0;
-                iRow = currentRow;
-                for (int i = iCol; i <= currentColumn; i++){
+            char blankDisc = '_';
 
+
+            // check for the left direction
+            for (iRow = curRow; iRow >= 0; iRow--){
+                /*
+                if the slot is empty, then empty the list and break;
+                slot is not the same color, then add to the list.
+                slot is same color then return the list
+                 */
+                if (grid[iRow][iCol] == blankDisc){
+                    candidatePoints = new ArrayList<>();
+                    break;
+                }
+                else if (grid[iRow][iCol] != color){
+                    candidatePoints.add(new Point(iRow, iCol));
+                }
+                else{
+                    break;
                 }
             }
-            else if (direction == Direction.RIGHT){
 
-            }
-            else if (direction == Direction.UP){
-
-            }
-            else{
-
+            if (candidatePoints.size() != 0){
+                flippedPointsList.addAll(candidatePoints);
+                candidatePoints = new ArrayList<>();
             }
 
+            // check for the right direction
+            for (iRow = curRow; iRow < getSize(); iRow++){
+                /*
+                if the slot is empty, then empty the list and break;
+                slot is not the same color, then add to the list.
+                slot is same color then return the list
+                 */
+                if (grid[iRow][iCol] == blankDisc){
+                    candidatePoints = new ArrayList<>();
+                    break;
+                }
+                else if (grid[iRow][iCol] != color){
+                    candidatePoints.add(new Point(iRow, iCol));
+                }
+                else{
+                    break;
+                }
+            }
 
-            return endPoint;
+            if (candidatePoints.size() != 0){
+                flippedPointsList.addAll(candidatePoints);
+                candidatePoints = new ArrayList<>();
+            }
+
+            // check for the up direction
+
+            for (iRow = curRow; iRow >= 0; iRow--){
+                /*
+                if the slot is empty, then empty the list and break;
+                slot is not the same color, then add to the list.
+                slot is same color then return the list
+                 */
+                if (grid[iRow][iCol] == blankDisc){
+                    candidatePoints = new ArrayList<>();
+                    break;
+                }
+                else if (grid[iRow][iCol] != color){
+                    candidatePoints.add(new Point(iRow, iCol));
+                }
+                else{
+                    break;
+                }
+            }
+
+            if (candidatePoints.size() != 0){
+                flippedPointsList.addAll(candidatePoints);
+                candidatePoints = new ArrayList<>();
+            }
+            // check for the down direction
+            for (iRow = curRow; iRow < getSize(); iRow++){
+                /*
+                if the slot is empty, then empty the list and break;
+                slot is not the same color, then add to the list.
+                slot is same color then return the list
+                 */
+                if (grid[iRow][iCol] == blankDisc){
+                    candidatePoints = new ArrayList<>();
+                    break;
+                }
+                else if (grid[iRow][iCol] != color){
+                    candidatePoints.add(new Point(iRow, iCol));
+                }
+                else{
+                    break;
+                }
+            }
+
+            if (candidatePoints.size() != 0){
+                flippedPointsList.addAll(candidatePoints);
+            }
+
+            return flippedPointsList;
         }
 
 
 
         // flip the possible discs
-        protected void flipColor(int currentRow, int currentCol){
+        protected void flipColor(int curRow, int curCol){
+            ArrayList<Point> flippedPoints = getFlippedPoints(curRow, curCol);
 
-
+            if (flippedPoints.size() == 0){
+                // change the color in the board
+                for (Point point : flippedPoints){
+                    grid[point.getX()][point.getY()] = color;
+                    // change in the list
+                    movePoints(point);
+                }
+            }
         }
+
 
         // check if can have another move?
         public boolean isEndGame(){
-            // check if there is other move for the opponent color
+            /*
+            for each value in the list, check if the slot adjacent to it is a valid one
+            if there is one, then return true
+             */
+            for (Point point: (color == 'B' ? blackMoves : whiteMoves)){
+                return haveNewNode(point.getX(), point.getY());
+            }
 
             return false;
         }
 
+        private boolean haveNewNode(int row, int col){
+            /*
+            for this node, check if up, down,... exist
+            then check if each direction is a valid move
+            if yes, then return true
+             */
+
+            if (haveUp(row) && isValidMove(row - 1, col)) {
+                return true;
+            }
+
+            if (haveDown(row) && isValidMove(row + 1, col)) {
+                return true;
+            }
+
+            if (haveLeft(col) && isValidMove(row, col - 1)) {
+                return true;
+            }
+
+            if (haveRight(col) && isValidMove(row, col + 1)) {
+                return true;
+            }
+
+            return false;
+        }
+
+        protected Point getNewNode(Point curPoint){
+            Point newNode = null;
+            int row = curPoint.getX();
+            int col = curPoint.getY();
+
+            if (haveUp(row) && isValidMove(row - 1, col)) {
+                newNode = new Point(row - 1, col);
+            }
+
+            if (haveDown(row) && isValidMove(row + 1, col)) {
+                newNode = new Point(row + 1, col);
+            }
+
+            if (haveLeft(col) && isValidMove(row, col - 1)) {
+                newNode = new Point(row, col - 1);
+            }
+
+            if (haveRight(col) && isValidMove(row, col + 1)) {
+                newNode = new Point(row, col + 1);
+            }
+
+            return newNode;
+        }
+
         public int getNumberOfDisc(){
-            int discNum = 0;
-            return discNum;
+            if (color == 'B'){
+                return blackMoves.size();
+            }
+            else{
+                return whiteMoves.size();
+            }
         }
 
     }
 
-//    protected class Point implements Comparable<Point>{
-//        int row;
-//        int column;
-//
-//        @Override
-//        public int compareTo(Point point){
-//            return 0;
-//        }
-//
-//    }
 
     protected char color;
     protected static Board board;
     private static int ID = 0;
-    private static TreeSet<Point> blackMoves;
-    private static TreeSet<Point> whiteMoves;
+    protected static TreeSet<Point> blackMoves = new TreeSet<>();
+    protected static TreeSet<Point> whiteMoves = new TreeSet<>();
 
 
     /**
@@ -141,9 +340,10 @@ abstract public class Player {
      * @param size size of the grid
      */
     Player(int size){
+
+        color = (ID == 0) ? 'B' : 'W';
+        board.createBoard(size);
         ID++;
-        color = (ID == 1) ? 'B' : 'W';
-        board = new Board(size);
     }
 
     public char getColor() {
@@ -159,4 +359,15 @@ abstract public class Player {
      * abstract method to make a new move in the game
      */
     public abstract void newMove();
+
+    protected void movePoints(Point point){
+        if (color == 'B'){
+            blackMoves.add(point);
+            whiteMoves.remove(point);
+        }
+        else{
+            whiteMoves.add(point);
+            blackMoves.remove(point);
+        }
+    }
 }
