@@ -1,5 +1,3 @@
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
-
 public class Computer extends Player {
 
     Computer(int size){
@@ -12,7 +10,6 @@ public class Computer extends Player {
     @Override
     public void newMove(){
 
-        final char BLACK = 'B';
 
         /*
         search the list of move of the opponent to find a new move
@@ -20,17 +17,18 @@ public class Computer extends Player {
          */
 
         Point newPoint = null;
-        for (Point point: (color == 'B' ? whiteMoves : blackMoves)){
+
+        for (Point point: (color == BoardState.BLACK ? whiteMoves : blackMoves)){
             if (board.getNewNode(point) != null){
                 newPoint = point;
                 break;
             }
         }
         // add the move to the board
-        board.addMove(newPoint.getX(), newPoint.getY());
+        board.addMoveToGrid(newPoint);
 
         // add move to the list
-        if (color == BLACK){
+        if (color == BoardState.BLACK){
             blackMoves.add(newPoint);
         }
         else{

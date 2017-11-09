@@ -1,5 +1,3 @@
-import java.util.Scanner;
-
 public class User extends Player {
 
     User(int size){
@@ -24,10 +22,10 @@ public class User extends Player {
         System.out.println("You move at " + row + ", "+ col);
 
         // make new move
-        board.addMove(row, col);
+        board.addMoveToGrid(new Point(row, col));
 
         // add the move to the tree according to the color
-        if (color == 'B'){
+        if (color == BoardState.BLACK){
             // use the blackTree
             blackMoves.add(new Point(row, col));
         }
